@@ -79,7 +79,6 @@ Alt-H1
 Alt-H2
 ------
 
-<a name="emphasis"/>
 ## Emphasis
 
 ```no-highlight
@@ -101,7 +100,6 @@ Combined emphasis with **asterisks and _underscores_**.
 Strikethrough uses two tildes. ~~Scratch this.~~
 
 
-<a name="lists"/>
 ## Lists
 
 (In this example, leading and trailing spaces are shown with with dots: ⋅)
