@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Embeded MD</title>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+
+<!-- <script src="markdown-it.min.js"></script> -->
+<!-- <script src ="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.4/markdown-it.min.js" integrity="sha512-0DkA2RqFvfXBVeti0R1l0E8oMkmY0X+bAA2i02Ld8xhpjpvqORUcE/UBe+0KOPzi5iNah0aBpW6uaNNrqCk73Q==" crossorigin="anonymous"></script> -->
+<!-- <link   href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.css" integrity="sha512-j84w/URwwK++Im1eDnefcHbtMSYWbwaLmJqcj58tDiZtjfPFPHEzxcnyOpqfGhTgxd/6xL2J9rmF987W64S8Tw==" crossorigin="anonymous" rel="stylesheet"/> -->
+<!-- <link href="vscode-markdown.css" type="text/css" rel="stylesheet" />  -->
+<!-- <link href="github-markdown-vscode.css" type="text/css" rel="stylesheet" /> -->
+<!-- <link href="vscode-markdown-pdf.css" type="text/css" rel="stylesheet" />  -->
+
+<!-- <script src ="https://unpkg.com/@highlightjs/cdn-assets@10.7.1/highlight.min.js"></script> -->
+<!-- <link   href="https://unpkg.com/@highlightjs/cdn-assets@10.7.1/styles/default.min.css" rel="stylesheet"/> -->
+<!-- <link   href="https://unpkg.com/@highlightjs/cdn-assets@10.7.1/styles/vs2015.min.css" rel="stylesheet"/> -->
+
+<!-- <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script> -->
+
+<!-- <script src="ig-markdown.js"></script> -->
+<!-- <link  href="ig-markdown.css" type="text/css" rel="stylesheet" /> -->
+</head>
+
+<!-- <body onload="ig_markdown()"> -->
+
+    <body>
+<!-- <div id="ig-markdown-html"></div> -->
+
+<!-- NOTE: the element with Mardown markuo must be 'pre' element -->
+<!-- <pre id="ig-markdown-text" style="opacity: 0; height: 0px; padding: 0px; margin: 0px"> -->
+<pre id="ig-markdown-text">
+## 10 reasons why not use (key, value) storage as relational database. Especially - distributed cache. 
+
+```mermaid
+graph LR
+    db[(Relational Database)] -- versus ---  kv((key,value));
+    kv --> n1{Node 1}
+    kv --> n3{Node 3}
+    n1 --> n2{Node 2}
+    n3 --> n4{Node 4}
+``` 
+
+### Semantical differences
+> probabbly not affecting performance, but making your developer's life harder
+
+The result set always `Hashmap` or similar collection like `IDictionary`. It means, you always get a collection of `(key,value)` pairs back as a result of running a query agains the cache. 
+What are the implications:
+
+1. If you model the value as a record in database, then the `key` is normally contained withing the record itself, i.e. in the value. But because key-value store is agnostic about the value content and it's structure (if any), it will always hand you back the `keys` and the `values` combined into single collection of (key, value) items. So, you always get the keys twice, wasting you memory space and the traffic.
+
+    ```java
+        IKeyValuePair[] result = cache.GetAll(...);
+    ```
+
+1. You always get entire collection back. Means all the items are first allocated in the memory space and then returned to the caller. There is no something like stream of records, which you can iterate through and read records one by one. So, you can't do:
+
+    ```csharp
+        IDataReader reader = cache.ExecQuery(...);
+        while(reader.ReadNext()) 
+        {
+            var record = reader.GetData();
+            ...
+        }
+
+        // let's test the less then operator inside code block
+        for(int i=0; i < count; i++)
+        {
+             object rec = reader.GetData();
+        }
+    ```
+
+## Some tables samples
+
+| Heading 1 | Heading 2
+| --------- | ---------
+| Cell 1    | Cell 2
+| Cell 3    | Cell 4
+
+| Header 1 | Header 2 | Header 3 | Header 4 |
+| :------: | -------: | :------- | -------- |
+| Cell 1   | Cell 2   | Cell 3   | Cell 4   |
+| Cell 5   | Cell 6   | Cell 7   | Cell 8   |
+
+    Test code
+
+Header 1 | Header 2
+-------- | --------
+Cell 1   | Cell 2
+Cell 3   | Cell 4
+
+Header 1|Header 2|Header 3|Header 4
+:-------|:------:|-------:|--------
+Cell 1  |Cell 2  |Cell 3  |Cell 4
+*Cell 5*|Cell 6  |Cell 7  |Cell 8
+
+## Checkbox
+
+-    [x] checked
+-    [*] unchecked
+
+</pre>
+<script src="ig-markdown.js"></script>
+<script>ig_markdown_render();</script>
+<br>EOF
+</body>

@@ -1,0 +1,118 @@
+<h2>10 reasons why not use (key, value) storage as relational database. Especially - distributed cache.</h2>
+<pre><code class="language-mermaid">graph LR
+    db[(Relational Database)] -- versus ---  kv((key,value));
+    kv --&gt; n1{Node 1}
+    kv --&gt; n3{Node 3}
+    n1 --&gt; n2{Node 2}
+    n3 --&gt; n4{Node 4}
+</code></pre>
+<h3>Semantical differences</h3>
+<blockquote>
+<p>probabbly not affecting performance, but making your developer's life harder</p>
+</blockquote>
+<p>The result set always <code>Hashmap</code> or similar collection like <code>IDictionary</code>. It means, you always get a collection of <code>(key,value)</code> pairs back as a result of running a query agains the cache.
+What are the implications:</p>
+<ol>
+<li>
+<p>If you model the value as a record in database, then the <code>key</code> is normally contained withing the record itself, i.e. in the value. But because key-value store is agnostic about the value content and it's structure (if any), it will always hand you back the <code>keys</code> and the <code>values</code> combined into single collection of (key, value) items. So, you always get the keys twice, wasting you memory space and the traffic.</p>
+<pre><code class="language-java">    IKeyValuePair[] result = cache.GetAll(...);
+</code></pre>
+</li>
+<li>
+<p>You always get entire collection back. Means all the items are first allocated in the memory space and then returned to the caller. There is no something like stream of records, which you can iterate through and read records one by one. So, you can't do:</p>
+<pre><code class="language-java">    IDataReader reader = cache.ExecQuery(...);
+    while(reader.ReadNext()) 
+    {
+        var record = reader.GetData();
+        ... 
+    }
+</code></pre>
+</li>
+</ol>
+<h2>Some tables samples</h2>
+<table>
+<thead>
+<tr>
+<th>Heading 1</th>
+<th>Heading 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cell 1</td>
+<td>Cell 2</td>
+</tr>
+<tr>
+<td>Cell 3</td>
+<td>Cell 4</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Header 1</th>
+<th style="text-align:right">Header 2</th>
+<th style="text-align:left">Header 3</th>
+<th>Header 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Cell 1</td>
+<td style="text-align:right">Cell 2</td>
+<td style="text-align:left">Cell 3</td>
+<td>Cell 4</td>
+</tr>
+<tr>
+<td style="text-align:center">Cell 5</td>
+<td style="text-align:right">Cell 6</td>
+<td style="text-align:left">Cell 7</td>
+<td>Cell 8</td>
+</tr>
+</tbody>
+</table>
+<pre><code>Test code
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Header 1</th>
+<th>Header 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cell 1</td>
+<td>Cell 2</td>
+</tr>
+<tr>
+<td>Cell 3</td>
+<td>Cell 4</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Header 1</th>
+<th style="text-align:center">Header 2</th>
+<th style="text-align:right">Header 3</th>
+<th>Header 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Cell 1</td>
+<td style="text-align:center">Cell 2</td>
+<td style="text-align:right">Cell 3</td>
+<td>Cell 4</td>
+</tr>
+<tr>
+<td style="text-align:left"><em>Cell 5</em></td>
+<td style="text-align:center">Cell 6</td>
+<td style="text-align:right">Cell 7</td>
+<td>Cell 8</td>
+</tr>
+</tbody>
+</table>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Embed MD from Tag</title>
+
+<!--
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css" rel="stylesheet" /> 
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/vs2015.min.css" rel="stylesheet" /> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/12.0.4/markdown-it.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.9.2/mermaid.min.js"></script>
+-->
+
+<link  href="../dist/md-embed-it.css" rel="stylesheet" /> 
+<script src="../dist/md-embed-it.js"></script>
+<!-- <link  href="https://igorgontar.github.io/artifacts/md-embed-it/0.0.1/dist/md-embed-it.css" rel="stylesheet" />-->
+<!-- <script src="https://igorgontar.github.io/artifacts/md-embed-it/0.0.1/dist/md-embed-it.js"></script> -->
+<script>
+new MdEmbedIt(); 
+//var mymd = new  MdEmbedIt({renderOnLoad:true, loadDeps:true}); 
+//x.render_all();
+//x.render_tag("md-id-1");
+</script>
+</head>
+<!-- 
+HOW TO USE: 
+    all you need to do is create 'pre' block with class="md-embed-it" and put your markdown markup inside.
+    you can hide this element if you you don't want markup to be visible, while it gets rendered, like this:
+    <pre class="md-embed-it" style="display: none;">
+    you can have multiple markdown blocks in the same html file
+    at the end of all markdown blocks include the following 3 lines of code:
+    
+    <link  href="../dist/md-embed-it.css" rel="stylesheet" />
+    <script src="ig-markdown.js"></script>
+    <script>ig_markdown_render_all();</script>
+
+    Or you can define your custom class name and use it in elements tags and render function:
+    render_all(className)
+    
+    If you want to render a specific markdwown element into specific placeholder in html content, 
+    you can pass the ids of the elements as a parameter:
+    ig_markdown_render(markdownElementId, htmlPlaceholderId);
+    
+    If you make syntax error in your mermaid diagram markup, the error will be displayed along with original 
+    mermaid text instead of diagram graph. 
+ KNOWN ISSUES:
+    The downside of embedding markdown markup into html is that the text must be a valid HTML.
+    All illegal characters must be esacaped. 
+    For example, if you need to use html tags, you have to use &lt; and &gt; for angle brackets.
+    But the whole purpose of this is to make it embeddable, so you can, for example, put it inside confluence 
+    page, which does not support markdown of some of it's extentions.
+    I'm working on another solution to load .md file from a separate file.
+    Will see how usefull it will be in case of confluence.
+ NOTE:
+    This solution works very well with VSCode Html Preview panel. No 3rd party plugins needed.   
+-->
+<pre id="md-id-1" class="md-embed-it" style="display: none;">
+## 10 reasons why not use (key, value) storage as relational database. Especially - distributed cache. 
+
+```mermaid
+graph LR
+    db[(Relational Database)] -- versus ---  kv((key,value));
+    kv --> n1{Node 1}
+    kv --> n3{Node 3}
+    n1 --> n2{Node 2}
+    n3 --> n4{Node 4}
+``` 
+
+### Semantical differences
+> probabbly not affecting performance, but making your developer's life harder
+
+The result set always `Hashmap` or similar collection like `IDictionary`. It means, you always get a collection of `(key,value)` pairs back as a result of running a query agains the cache. 
+What are the implications:
+
+1. If you model the value as a record in database, then the `key` is normally contained withing the record itself, i.e. in the value. But because key-value store is agnostic about the value content and it's structure (if any), it will always hand you back the `keys` and the `values` combined into single collection of (key, value) items. So, you always get the keys twice, wasting you memory space and the traffic.
+
+    ```java
+        IKeyValuePair[] result = cache.GetAll(...);
+    ```
+
+1. You always get entire collection back. Means all the items are first allocated in the memory space and then returned to the caller. There is no something like stream of records, which you can iterate through and read records one by one. So, you can't do:
+
+    ```csharp
+        IDataReader reader = cache.ExecQuery(...);
+        while(reader.ReadNext()) 
+        {
+            var rec = reader.GetData();
+            ...
+        }
+
+        // let's test the less then operator inside code block
+        for(int i=0; i < count; i++)
+        {
+             object rec = reader.GetData();
+        }
+    ```
+
+## Some tables samples
+
+| Heading 1 | Heading 2
+| --------- | ---------
+| Cell 1    | Cell 2
+| Cell 3    | Cell 4
+
+| Header 1 | Header 2 | Header 3 | Header 4 |
+| :------: | -------: | :------- | -------- |
+| Cell 1   | Cell 2   | Cell 3   | Cell 4   |
+| Cell 5   | Cell 6   | Cell 7   | Cell 8   |
+
+    Test code
+
+Header 1 | Header 2
+-------- | --------
+Cell 1   | Cell 2
+Cell 3   | Cell 4
+
+Header 1|Header 2|Header 3|Header 4
+:-------|:------:|-------:|--------
+Cell 1  |Cell 2  |Cell 3  |Cell 4
+*Cell 5*|Cell 6  |Cell 7  |Cell 8
+
+## Checkbox
+
+-    [x] checked
+-    [*] unchecked
+
+## Let's put some &lt;span style="color:red;">HTML&lt;/span> source code here
+```html
+&lt;span style="color:red;">HTML&lt;/span>
+```
+
+</pre>
+
+<pre id="md-id-2" class="md-embed-it" style="display:none;">
+-----------------
+## Here is the second markdown section
+> look how fast is it...
+</pre>
+
+<br>EOF
+
+<script>
+    //mymd.render_all();
+    //mymd.render_tag("md-id-1");
+    //mymd.render_tag("md-id-2");
+</script>
+    
+</body>
