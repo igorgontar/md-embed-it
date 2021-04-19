@@ -1,6 +1,10 @@
 # md-embed-it
 
-Embedding and rendering markdown markup in HTML page (with code *highlights* and *mermaid* diagrams support)
+Embedding and rendering markdown markup into HTML page (with 
+code [*highlights* ](https://github.com/highlightjs/highlight.js) 
+and [*mermaid*](https://github.com/mermaid-js/mermaid) diagrams support).
+
+The renderig engine is [markdown-it](https://github.com/markdown-it/markdown-it)
 
 ## Live demo
 
